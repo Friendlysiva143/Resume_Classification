@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume Classifier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* BASE (LIGHT) THEME VARIABLES */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            
+            --upload-bg: #F9FAFB;
+            --upload-hover: #F0F4FF;
+            
+            --success-bg: #ECFDF5;
+            --success-text: #065F46;
+            --success-border: #A7F3D0;
+            
+            --error-bg: #FEF2F2;
+            --error-text: #991B1B;
+            --error-border: #FECACA;
+            
+            --nav-shadow: rgba(0,0,0,0.05);
+            --card-shadow: rgba(0,0,0,0.05);
+        }
+
+        /* DARK THEME VARIABLES */
+        body.dark-mode {
+            --primary-color: #6366F1;
+            --primary-hover: #818CF8;
+            
+            --bg-color: #111827;
+            --card-bg: #1F2937;
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border-color: #374151;
+            
+            --upload-bg: #374151;
+            --upload-hover: #4B5563;
+            
+            --success-bg: rgba(6, 95, 70, 0.2);
+            --success-text: #34D399;
+            --success-border: #065F46;
+            
+            --error-bg: rgba(153, 27, 27, 0.2);
+            --error-text: #F87171;
+            --error-border: #991B1B;
+            
+            --nav-shadow: rgba(0,0,0,0.3);
+            --card-shadow: rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--card-bg);
+            box-shadow: 0 1px 3px var(--nav-shadow);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: -0.5px;
+        }
+
+        /* THEME TOGGLE BUTTON */
+        .theme-toggle {
+            background: var(--upload-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--border-color);
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--card-shadow), 0 4px 6px rgba(0,0,0,0.02);
+            text-align: center;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* CUSTOM FILE UPLOAD */
+        .file-upload-wrapper {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            background-color: var(--upload-bg);
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary-color);
+            background-color: var(--upload-hover);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 15px;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* BUTTON */
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            padding: 14px 24px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* RESULTS SECTION */
+        .result-card {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: 12px;
+            text-align: left;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .result-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--success-text);
+            margin-bottom: 12px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .category-badge {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .confidence-score {
+            font-weight: 700;
+            color: var(--success-text);
+            font-size: 18px;
+        }
+
+        /* ERROR SECTION */
+        .error-card {
+            margin-top: 25px;
+            padding: 15px;
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid var(--error-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📄 Resume Classifier</div>
+    
+    <button class="theme-toggle" id="theme-toggle-btn">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+    </button>
+</nav>
+
+<div class="main">
+    <div class="container">
+
+        <h2>Upload Resume</h2>
+        <p class="subtitle">Securely scan and classify candidate profiles.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="file-upload-wrapper">
+                <input type="file" name="resume_file" accept=".pdf,.docx" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">Analyze Resume</button>
+        </form>
+
+        {% if prediction is not None %}
+        <div class="result-card">
+            <div class="result-title">Analysis Complete</div>
+            <div class="result-item">
+                <span style="color: var(--text-muted)">Role Category:</span>
+                <span class="category-badge">{{ prediction }}</span>
+            </div>
+            <div class="result-item">
+                <span style="color: var(--text-muted)">Confidence Match:</span>
+                <span class="confidence-score">{{ confidence }}%</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-card">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<footer class="footer">
+    © 2026 Resume Classifier | Developed by Siva Prasad
+</footer>
+
+<script>
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    
+    // Check local storage for theme preference on page load
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Light Mode';
+    }
+
+    // Toggle theme on click
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeIcon.textContent = '☀️';
+            themeText.textContent = 'Light Mode';
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeIcon.textContent = '🌙';
+            themeText.textContent = 'Dark Mode';
+        }
+    });
+</script>
+
+</body>
+</html>
